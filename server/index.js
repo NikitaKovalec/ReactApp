@@ -25,7 +25,7 @@ User.sync()
 		console.log('Ошибка' + err.message);
 	})
 
-const urlencodedParser = express.urlencoded({extended: false})
+app.use(express.urlencoded({extended: false}))
 app.set('view engine', 'ejs')
 
 app.use('/build', express.static(path.join(__dirname, '../build')))
@@ -36,10 +36,11 @@ app.get('/', (req, res) => {
 	})
 })
 
-app.post('/createUser', urlencodedParser, async (req, res) => {
+app.post('/createUser', async (req, res) => {
 	if(!req.body) return res.status(400).send('Непредвиденная ошибка')
 	try {
 		await User.create({userName: req.body.name, password: req.body.pass})
+		res.json('Пользователь создан')
 	} catch (err) {
 		await console.log(err.message)
 		res.status(500).send('Непредвиденная ошибка. Попробуйте позже')

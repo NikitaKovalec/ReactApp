@@ -4,10 +4,14 @@ const path = require('path')
 
 const port = 3000
 
-app.use(express.static(path.join(__dirname, '../build')))
+app.set('view engine', 'ejs')
+
+app.use('/build', express.static(path.join(__dirname, '../build')))
 
 app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, '../main.html'))
+	res.render('../../main.ejs', {
+		serverPort: port
+	})
 })
 
 app.listen(port, () => {

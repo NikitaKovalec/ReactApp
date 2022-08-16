@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const cors = require('cors')
 const path = require('path')
 const {Sequelize, DataTypes} = require('sequelize')
 const sequelize = new Sequelize('userList', 'postgres', 'postgres', {
@@ -7,6 +8,7 @@ const sequelize = new Sequelize('userList', 'postgres', 'postgres', {
 	dialect: 'postgres',
 	port: 5432,
 })
+const port = 3000
 
 const User = sequelize.define('user', {
 	userName: DataTypes.STRING,
@@ -14,8 +16,6 @@ const User = sequelize.define('user', {
 }, {
 	tableName: 'users',
 })
-
-const port = 3000
 
 User.sync()
 	.then(() => {
@@ -25,9 +25,10 @@ User.sync()
 		console.log('Ошибка' + err.message);
 	})
 
+app.use(cors())
+app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.set('view engine', 'ejs')
-
 app.use('/build', express.static(path.join(__dirname, '../build')))
 
 app.get('/', (req, res) => {

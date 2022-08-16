@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 })
 
 app.post('/createUser', async (req, res) => {
-	if(!req.body) return res.status(400).send('Непредвиденная ошибка')
+	if(!req.body) return res.status(400).send('Заполните поля')
 	try {
 		await User.create({userName: req.body.name, password: req.body.pass})
 		res.json('Пользователь создан')

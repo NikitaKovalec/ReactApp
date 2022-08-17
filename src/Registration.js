@@ -32,14 +32,14 @@ export const Registration = () => {
 	}
 	return (<>
 			{isError ? <h4>Ошибка</h4> : null}
-			<form>
+			<div>
 				<h3>Registration</h3>
 				<label>Имя</label>
 				<input value={name} onChange={(e) => setName(e.target.value)} />
 				<label>Пароль</label>
 				<input value={pass} onChange={(e) => setPass(e.target.value)} />
 				<button onClick={fetchReg}>Отправить</button>
-			</form>
+			</div>
 			<Link to='/login'>
 				<button style={{marginTop: 20}}>Login</button>
 			</Link>

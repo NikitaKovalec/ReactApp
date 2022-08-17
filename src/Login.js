@@ -1,10 +1,13 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import {Link} from "react-router-dom"
+import {UserContext} from "./context";
 
 export const Login = () => {
 	const [name, setName] = useState("")
 	const [pass, setPass] = useState("")
 	const [isError, setIsError] = useState(false)
+
+	const {setUser} = useContext(UserContext)
 
 	const fetchLogin = async () => {
 		setIsError(false)
@@ -19,11 +22,13 @@ export const Login = () => {
 			})
 			if (result.ok) {
 				window.alert("Вы вошли")
+				setUser({name})
 			} else {
 				throw new Error('Ошибка')
 			}
 		} catch (err) {
 			console.log(err.message)
+			setUser(null)
 			setIsError(true)
 		} finally {
 			setPass('')
@@ -42,6 +47,9 @@ export const Login = () => {
 			</div>
 			<Link to='/'>
 				<button style={{marginTop: 20}}>Registration</button>
+			</Link>
+			<Link to='/main'>
+				<button style={{marginTop: 20, marginLeft: 10}}>Main</button>
 			</Link>
 		</>
 	)

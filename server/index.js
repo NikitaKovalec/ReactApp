@@ -35,11 +35,12 @@ app.get('/', (req, res) => {
 	})
 })
 
-app.post('/login', async (req, res) => {
+app.put('/login/:name', async (req, res) => {
 	if(!req.body) return res.status(400).send('Заполните поля')
 	try {
-		await User.findOne({where: {userName: req.body.name, password: req.body.pass}})
-		res.json('Успешно')
+		const user = await User.findOne({where: {userName: req.params.name}})
+		if(user.password === req.body.pass) return res.json('Успешно')
+		return res.status(404).send('Нет такого пользователя')
 	} catch (err) {
 		await console.log(err.message)
 		res.status(500).send('Непредвиденная ошибка. Попробуйте позже')

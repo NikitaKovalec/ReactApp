@@ -9,9 +9,9 @@ export const Login = () => {
 	const fetchLogin = async () => {
 		setIsError(false)
 		try {
-			const result = await fetch('http://localhost:3000/login', {
+			const result = await fetch('http://localhost:3000/login/' + name, {
 				mode: 'cors',
-				method: 'POST',
+				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json'
 				},

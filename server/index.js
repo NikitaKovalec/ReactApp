@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const path = require('path')
+const cookieParser= require('cookie-parser')
 const {Sequelize, DataTypes} = require('sequelize')
 const sequelize = new Sequelize('userList', 'postgres', 'postgres', {
 	host: 'localhost',
@@ -34,6 +35,7 @@ User.sync()
 	})
 
 app.use(express.json())
+app.use(cookieParser())
 app.use(express.urlencoded({extended: false}))
 app.set('view engine', 'ejs')
 app.use('/build', express.static(path.join(__dirname, '../build')))
@@ -49,7 +51,12 @@ app.post('/login', async (req, res) => {
 	try {
 		const user = await User.findOne({where: {userName: req.body.name}})
 		if (!user) return res.status(404).send('Нет такого пользователя')
-		if (user.password === req.body.pass) return res.json('Успешно')
+		if (user.password === req.body.pass) {
+			res.cookie('user_session', JSON.stringify(user.id))
+			return res.json('Успешно')
+		}else {
+			throw new Error('Ошибка введенных данных')
+		}
 	} catch (err) {
 		await console.log(err.message)
 		res.status(500).send('Непредвиденная ошибка. Попробуйте позже')

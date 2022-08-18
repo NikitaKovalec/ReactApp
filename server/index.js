@@ -46,7 +46,7 @@ const key = process.env.APP_SECRET
 
 app.get('*', async (req, res) => {
 	const cookies = req.cookies
-	const userId = cookies.user_session
+	const encryptedUserId = cookies.user_session
 	function decrypt(string) {
 		const decipher = crypto.createDecipher('aes-256-cbc', key)
 		let decrypted = decipher.update(string, 'hex', 'utf8')
@@ -54,8 +54,8 @@ app.get('*', async (req, res) => {
 		return decrypted
 	}
 	let user = null
-	if (userId) {
-		user = (await User.findOne({where: {id: decrypt(userId)}})).dataValues
+	if (encryptedUserId) {
+		user = (await User.findOne({where: {id: decrypt(encryptedUserId)}})).dataValues
 	}
 
 	res.render('../../main.ejs', {

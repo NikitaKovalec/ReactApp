@@ -40,15 +40,15 @@ export const Login = () => {
 			{isError ? <h4>Ошибка</h4> : null}
 			{user ? <Navigate to="/main" replace={true}/> : <>
 				<div>
-					<h3>Login</h3>
+					<h3>Вход</h3>
 					<label>Имя</label>
 					<input value={name} onChange={(e) => setName(e.target.value)}/>
 					<label>Пароль</label>
 					<input value={pass} onChange={(e) => setPass(e.target.value)}/>
 					<button onClick={fetchLogin}>Войти</button>
 				</div>
-				<Link to='/'>
-					<button style={{marginTop: 20}}>Registration</button>
+				<Link to='/registration'>
+					<button style={{marginTop: 20}}>Зарегистрироваться</button>
 				</Link>
 			</>}
 		</>

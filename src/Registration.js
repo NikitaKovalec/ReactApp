@@ -36,15 +36,15 @@ export const Registration = () => {
 			{isError ? <h4>Ошибка</h4> : null}
 			{user ? <Navigate to="/main" replace={true}/> : <>
 				<div>
-					<h3>Registration</h3>
+					<h3>Регистрация</h3>
 					<label>Имя</label>
 					<input value={name} onChange={(e) => setName(e.target.value)}/>
 					<label>Пароль</label>
 					<input value={pass} onChange={(e) => setPass(e.target.value)}/>
-					<button onClick={fetchReg}>Войти</button>
+					<button onClick={fetchReg}>Зарегистрироваться</button>
 				</div>
-				<Link to='/login'>
-					<button style={{marginTop: 20}}>Registration</button>
+				<Link to='/'>
+					<button style={{marginTop: 20}}>Войти</button>
 				</Link>
 			</>}
 		</>

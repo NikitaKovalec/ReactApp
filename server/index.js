@@ -43,14 +43,13 @@ app.use('/build', express.static(path.join(__dirname, '../build')))
 app.get('*', async (req, res) => {
 	const cookies = req.cookies
 	const userId = cookies.user_session
-	const  findUser = async () => {
-		if (userId) {
-			const user = await User.findOne({where: {id: userId}})
-			return user.dataValues
-		}
+	let user = null
+	if (userId) {
+		user = (await User.findOne({where: {id: userId}})).dataValues
 	}
+
 	res.render('../../main.ejs', {
-		user: userId ? await findUser() : null
+		user
 	})
 })
 
@@ -60,7 +59,7 @@ app.post('/login', async (req, res) => {
 		const user = await User.findOne({where: {userName: req.body.name}})
 		if (!user) return res.status(404).send('Нет такого пользователя')
 		if (user.password === req.body.pass) {
-			res.cookie('user_session', JSON.stringify(user.id))
+			res.cookie('user_session', JSON.stringify(user.id), {httpOnly: true})
 			res.json(user)
 		} else {
 			res.status(401).send('Ошибка введенных данных')

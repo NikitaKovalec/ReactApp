@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const crypto = require('crypto')
@@ -41,12 +42,20 @@ app.use(express.urlencoded({extended: false}))
 app.set('view engine', 'ejs')
 app.use('/build', express.static(path.join(__dirname, '../build')))
 
+const key = process.env.APP_SECRET
+
 app.get('*', async (req, res) => {
 	const cookies = req.cookies
 	const userId = cookies.user_session
+	function decrypt(string) {
+		const decipher = crypto.createDecipher('aes-256-cbc', key)
+		let decrypted = decipher.update(string, 'hex', 'utf8')
+		decrypted += decipher.final('utf8')
+		return decrypted
+	}
 	let user = null
 	if (userId) {
-		user = (await User.findOne({where: {id: userId}})).dataValues
+		user = (await User.findOne({where: {id: decrypt(userId)}})).dataValues
 	}
 
 	res.render('../../main.ejs', {
@@ -62,8 +71,18 @@ app.post('/login', async (req, res) => {
 		const passForHash = req.body.pass
 		const salt = req.body.name
 		const hash = crypto.createHash('sha512', salt).update(passForHash).digest('hex')
+
 		if (user.password === hash) {
-			res.cookie('user_session', JSON.stringify(user.id), {httpOnly: true})
+			let userId = JSON.stringify(user.id)
+			function encrypt(string) {
+				const cipher = crypto.createCipher('aes-256-cbc', key)
+				let encrypted = cipher.update(string, 'utf8', 'hex')
+				encrypted += cipher.final('hex')
+				return encrypted
+			}
+			console.log(encrypt(userId))
+
+			res.cookie('user_session', encrypt(userId), {httpOnly: true})
 			res.json(user)
 		} else {
 			res.status(401).send('Ошибка введенных данных')

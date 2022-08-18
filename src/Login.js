@@ -1,13 +1,17 @@
-import React, {useContext, useState} from 'react'
-import {Link} from "react-router-dom"
-import {UserContext} from "./context";
+import React, {useContext, useEffect, useState} from 'react'
+import {Link, useNavigate} from "react-router-dom"
+import {UserContext} from "./context"
 
 export const Login = () => {
 	const [name, setName] = useState("")
 	const [pass, setPass] = useState("")
 	const [isError, setIsError] = useState(false)
 
-	const {setUser} = useContext(UserContext)
+	const {user, setUser} = useContext(UserContext)
+	const navigate = useNavigate()
+	useEffect(() => {
+		if (user) navigate('/main')
+	}, [user])
 
 	const fetchLogin = async () => {
 		setIsError(false)
@@ -22,7 +26,8 @@ export const Login = () => {
 			})
 			if (result.ok) {
 				window.alert("Вы вошли")
-				setUser({name})
+				const loginUser = await result.json()
+				setUser(loginUser)
 			} else {
 				throw new Error('Ошибка')
 			}
@@ -47,9 +52,6 @@ export const Login = () => {
 			</div>
 			<Link to='/'>
 				<button style={{marginTop: 20}}>Registration</button>
-			</Link>
-			<Link to='/main'>
-				<button style={{marginTop: 20, marginLeft: 10}}>Main</button>
 			</Link>
 		</>
 	)

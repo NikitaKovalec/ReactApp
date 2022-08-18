@@ -10,7 +10,7 @@
 <body>
 <div id="root"></div>
 <script>
-	window.serverPort = '<%= serverPort %>'
+	window.userCookies = '<%- JSON.stringify(user) || null %>'
 </script>
 <script src="build/app.js"></script>
 </body>

@@ -6,7 +6,7 @@ import {BrowserRouter} from "react-router-dom"
 import {UserContext} from "./context"
 
 function AppWithContext() {
-	const [user, setUser] = useState({})
+	const [user, setUser] = useState(JSON.parse(window.userCookies) || null)
 
 	return (
 		<BrowserRouter>

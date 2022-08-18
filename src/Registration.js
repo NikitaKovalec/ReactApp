@@ -1,10 +1,17 @@
-import React, {useState} from 'react'
-import {Link} from "react-router-dom"
+import React, {useContext, useEffect, useState} from 'react'
+import {Link, useNavigate} from "react-router-dom"
+import {UserContext} from "./context"
 
 export const Registration = () => {
 	const [name, setName] = useState("")
 	const [pass, setPass] = useState("")
 	const [isError, setIsError] = useState(false)
+	const {user} = useContext(UserContext)
+
+	const navigate = useNavigate()
+	useEffect(() => {
+		if (user) navigate('/main')
+	}, [user])
 
 	const fetchReg = async () => {
 		setIsError(false)

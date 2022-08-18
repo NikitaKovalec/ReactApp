@@ -40,9 +40,17 @@ app.use(express.urlencoded({extended: false}))
 app.set('view engine', 'ejs')
 app.use('/build', express.static(path.join(__dirname, '../build')))
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+	const cookies = req.cookies
+	const cookiesValue = cookies.user_session
+	if (cookiesValue) {
+		const user = await User.findOne({where: {id: cookiesValue}})
+		res.render('../../main.ejs', {
+			user: user.dataValues
+		})
+	}
 	res.render('../../main.ejs', {
-		serverPort: port
+		user: null
 	})
 })
 
@@ -53,9 +61,9 @@ app.post('/login', async (req, res) => {
 		if (!user) return res.status(404).send('Нет такого пользователя')
 		if (user.password === req.body.pass) {
 			res.cookie('user_session', JSON.stringify(user.id))
-			return res.json('Успешно')
+			res.json(user)
 		}else {
-			throw new Error('Ошибка введенных данных')
+			res.status(401).send('Ошибка введенных данных')
 		}
 	} catch (err) {
 		await console.log(err.message)
@@ -72,6 +80,11 @@ app.post('/createUser', async (req, res) => {
 		await console.log(err.message)
 		res.status(500).send('Непредвиденная ошибка. Попробуйте позже')
 	}
+})
+
+app.post('/logout', async (req, res) => {
+	res.clearCookie('user_session')
+	res.send('Вы вышли')
 })
 
 app.listen(port, () => {

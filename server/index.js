@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const path = require('path')
-const cookieParser= require('cookie-parser')
+const cookieParser = require('cookie-parser')
 const {Sequelize, DataTypes} = require('sequelize')
 const sequelize = new Sequelize('userList', 'postgres', 'postgres', {
 	host: 'localhost',
@@ -40,29 +40,29 @@ app.use(express.urlencoded({extended: false}))
 app.set('view engine', 'ejs')
 app.use('/build', express.static(path.join(__dirname, '../build')))
 
-app.get('/', async (req, res) => {
+app.get('*', async (req, res) => {
 	const cookies = req.cookies
-	const cookiesValue = cookies.user_session
-	if (cookiesValue) {
-		const user = await User.findOne({where: {id: cookiesValue}})
-		res.render('../../main.ejs', {
-			user: user.dataValues
-		})
+	const userId = cookies.user_session
+	const  findUser = async () => {
+		if (userId) {
+			const user = await User.findOne({where: {id: userId}})
+			return user.dataValues
+		}
 	}
 	res.render('../../main.ejs', {
-		user: null
+		user: userId ? await findUser() : null
 	})
 })
 
 app.post('/login', async (req, res) => {
-	if(!req.body) return res.status(400).send('Заполните поля')
+	if (!req.body) return res.status(400).send('Заполните поля')
 	try {
 		const user = await User.findOne({where: {userName: req.body.name}})
 		if (!user) return res.status(404).send('Нет такого пользователя')
 		if (user.password === req.body.pass) {
 			res.cookie('user_session', JSON.stringify(user.id))
 			res.json(user)
-		}else {
+		} else {
 			res.status(401).send('Ошибка введенных данных')
 		}
 	} catch (err) {
@@ -72,7 +72,7 @@ app.post('/login', async (req, res) => {
 })
 
 app.post('/createUser', async (req, res) => {
-	if(!req.body) return res.status(400).send('Заполните поля')
+	if (!req.body) return res.status(400).send('Заполните поля')
 	try {
 		await User.create({userName: req.body.name, password: req.body.pass})
 		res.json('Пользователь создан')

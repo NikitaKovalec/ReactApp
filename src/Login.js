@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react'
-import {Link, useNavigate} from "react-router-dom"
+import React, {useContext, useState} from 'react'
+import {Link, Navigate} from "react-router-dom"
 import {UserContext} from "./context"
 
 export const Login = () => {
@@ -8,10 +8,6 @@ export const Login = () => {
 	const [isError, setIsError] = useState(false)
 
 	const {user, setUser} = useContext(UserContext)
-	const navigate = useNavigate()
-	useEffect(() => {
-		if (user) navigate('/main')
-	}, [user])
 
 	const fetchLogin = async () => {
 		setIsError(false)
@@ -25,7 +21,6 @@ export const Login = () => {
 				body: JSON.stringify({name, pass})
 			})
 			if (result.ok) {
-				window.alert("Вы вошли")
 				const loginUser = await result.json()
 				setUser(loginUser)
 			} else {
@@ -38,21 +33,24 @@ export const Login = () => {
 		} finally {
 			setPass('')
 			setName('')
-		}}
+		}
+	}
 
 	return (<>
 			{isError ? <h4>Ошибка</h4> : null}
-			<div>
-				<h3>Login</h3>
-				<label>Имя</label>
-				<input value={name} onChange={(e) => setName(e.target.value)}/>
-				<label>Пароль</label>
-				<input value={pass} onChange={(e) => setPass(e.target.value)}/>
-				<button onClick={fetchLogin}>Войти</button>
-			</div>
-			<Link to='/'>
-				<button style={{marginTop: 20}}>Registration</button>
-			</Link>
+			{user ? <Navigate to="/main" replace={true}/> : <>
+				<div>
+					<h3>Login</h3>
+					<label>Имя</label>
+					<input value={name} onChange={(e) => setName(e.target.value)}/>
+					<label>Пароль</label>
+					<input value={pass} onChange={(e) => setPass(e.target.value)}/>
+					<button onClick={fetchLogin}>Войти</button>
+				</div>
+				<Link to='/'>
+					<button style={{marginTop: 20}}>Registration</button>
+				</Link>
+			</>}
 		</>
 	)
 }
